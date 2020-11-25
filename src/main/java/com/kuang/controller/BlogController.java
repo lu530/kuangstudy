@@ -4,6 +4,7 @@ package com.kuang.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.kuang.cache.ViewsCache;
 import com.kuang.pojo.*;
 import com.kuang.service.BlogCategoryService;
 import com.kuang.service.BlogService;
@@ -18,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.util.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +46,9 @@ public class BlogController {
 
     @Autowired
     ThumbsService thumbsService;
+
+    @Autowired
+    ViewsCache viewsCache;
 
     // 列表展示
     @GetMapping("/blog")
@@ -124,19 +129,22 @@ public class BlogController {
 
     // 阅读文章
     @GetMapping("/blog/read/{bid}")
-    public String read(@PathVariable("bid") String bid,Model model){
+    public String read(@PathVariable("bid") String bid,Model model, HttpServletRequest req){
         Blog blog = blogService.getOne(new QueryWrapper<Blog>().eq("bid", bid));
-        // todo: redis缓存. 防止阅读重复
-        blog.setViews(blog.getViews()+1);
+        // 防止阅读重复
+        String ip = KuangUtils.getIP(req);
+        if(StringUtils.isEmpty(viewsCache.getIpBid(ip + "_" + bid))){
+            blog.setViews(blog.getViews()+1);
+            viewsCache.putIpBid(ip + "_" + bid, bid);
+        }
         blogService.updateById(blog);
         model.addAttribute("blog",blog);
-        // todo： 查询评论
        // List<Comment> commentList = commentService.list(new QueryWrapper<Comment>().eq("topic_id", bid).orderByDesc("gmt_create"));
         List<CommentTreeNode> commentList = commentService.tree(new QueryWrapper<Comment>().eq("topic_id", bid).orderByDesc("gmt_create"));
 
         List<Map<String, Object>> maps = thumbsService.listMaps(new QueryWrapper<Thumbs>().select("thumbs_flag", "count(1) as count").eq("topic_id", bid).groupBy("thumbs_flag"));
 
-         Map<String, Object> thumbs
+        Map<String, Object> thumbs
                 = maps.stream().collect(Collectors.toMap(item -> StringUtils.toString(item.get("thumbs_flag")), item -> StringUtils.toString(item.get("count")), (oldValue, newValue) -> newValue));
 
         model.addAttribute("commentList",commentList);

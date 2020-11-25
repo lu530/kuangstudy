@@ -1,22 +1,27 @@
 package com.kuang.controller;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.kuang.pojo.Blog;
-import com.kuang.pojo.BlogCategory;
-import com.kuang.pojo.Comment;
+import com.kuang.pojo.*;
 import com.kuang.service.BlogCategoryService;
 import com.kuang.service.BlogService;
 import com.kuang.service.CommentService;
+import com.kuang.service.ThumbsService;
 import com.kuang.utils.KuangUtils;
+import com.kuang.vo.CommentTreeNode;
 import com.kuang.vo.QuestionWriteForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.util.StringUtils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -35,6 +40,10 @@ public class BlogController {
     BlogService blogService;
     @Autowired
     CommentService commentService;
+
+
+    @Autowired
+    ThumbsService thumbsService;
 
     // 列表展示
     @GetMapping("/blog")
@@ -122,8 +131,16 @@ public class BlogController {
         blogService.updateById(blog);
         model.addAttribute("blog",blog);
         // todo： 查询评论
-        List<Comment> commentList = commentService.list(new QueryWrapper<Comment>().eq("topic_id", bid).orderByDesc("gmt_create"));
+       // List<Comment> commentList = commentService.list(new QueryWrapper<Comment>().eq("topic_id", bid).orderByDesc("gmt_create"));
+        List<CommentTreeNode> commentList = commentService.tree(new QueryWrapper<Comment>().eq("topic_id", bid).orderByDesc("gmt_create"));
+
+        List<Map<String, Object>> maps = thumbsService.listMaps(new QueryWrapper<Thumbs>().select("thumbs_flag", "count(1) as count").eq("topic_id", bid).groupBy("thumbs_flag"));
+
+         Map<String, Object> thumbs
+                = maps.stream().collect(Collectors.toMap(item -> StringUtils.toString(item.get("thumbs_flag")), item -> StringUtils.toString(item.get("count")), (oldValue, newValue) -> newValue));
+
         model.addAttribute("commentList",commentList);
+        model.addAttribute("thumbs", thumbs);
         return "blog/read";
     }
 

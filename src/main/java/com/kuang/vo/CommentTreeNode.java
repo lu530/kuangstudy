@@ -1,30 +1,16 @@
-package com.kuang.pojo;
+package com.kuang.vo;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
-import io.swagger.annotations.ApiModel;
+import com.kuang.pojo.Comment;
+import com.kuang.pojo.TreeNode;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-/**
- * <p>
- * 
- * </p>
- *
- * @author 遇见狂神说
- * @since 2020-06-30
- */
+import java.util.Date;
+
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@TableName("ks_comment")
-@ApiModel(value="Comment对象", description="")
-public class Comment  implements Serializable {
+public class CommentTreeNode extends TreeNode {
 
     private static final long serialVersionUID = 1L;
 
@@ -59,7 +45,7 @@ public class Comment  implements Serializable {
     @ApiModelProperty(value = "父节点ID")
     private Integer parentId;
 
-/*    public Comment(int nid, int pid, Integer id, String commentId, Integer topicCategory, String topicId, String userId, String userName, String userAvatar, String content, Date gmtCreate, Integer parentId) {
+    public CommentTreeNode(int nid, int pid, Integer id, String commentId, Integer topicCategory, String topicId, String userId, String userName, String userAvatar, String content, Date gmtCreate, Integer parentId) {
         super(nid, pid);
         this.id = id;
         this.commentId = commentId;
@@ -71,5 +57,19 @@ public class Comment  implements Serializable {
         this.content = content;
         this.gmtCreate = gmtCreate;
         this.parentId = parentId;
-    }*/
+    }
+
+    public CommentTreeNode(int nid, int pid){
+        super(nid, pid);
+    }
+
+    public CommentTreeNode(){
+        super();
+    }
+
+
+
+
+
+
 }

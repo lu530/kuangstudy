@@ -36,10 +36,10 @@ public class CodeGenerator {
 
         // 3、数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setUrl("jdbc:mysql://localhost:3306/kuangstudy?useUnicode=true&characterEncoding=utf-8&useSSL=false");
+        dsc.setUrl("jdbc:mysql://47.106.180.89:3306/kuangstudy?useUnicode=true&characterEncoding=utf-8&useSSL=false");
         dsc.setDriverName("com.mysql.jdbc.Driver");
         dsc.setUsername("root");
-        dsc.setPassword("123456");
+        dsc.setPassword("426530haha@XI");
         dsc.setDbType(DbType.MYSQL);
         mpg.setDataSource(dsc);
 
@@ -56,7 +56,7 @@ public class CodeGenerator {
         // 5、策略配置
         StrategyConfig strategy = new StrategyConfig();
         //strategy.setInclude("ks_\\w*");//设置要映射的表名
-        strategy.setInclude("ks_download");//设置要映射的表名
+        strategy.setInclude("ks_thumbs");//设置要映射的表名
         strategy.setNaming(NamingStrategy.underline_to_camel);//数据库表映射到实体的命名策略
         strategy.setTablePrefix("ks_");//设置表前缀不生成
 

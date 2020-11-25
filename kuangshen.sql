@@ -2,7 +2,8 @@
 SQLyog Ultimate v12.08 (64 bit)
 MySQL - 5.7.19 : Database - kuangstudy
 *********************************************************************
-*/
+*/
+
 
 /*!40101 SET NAMES utf8 */;
 
@@ -61,6 +62,7 @@ CREATE TABLE `ks_comment` (
   `user_avatar` varchar(500) NOT NULL COMMENT '评论者头像',
   `content` longtext NOT NULL COMMENT '评论内容',
   `gmt_create` datetime NOT NULL COMMENT '评论创建时间',
+  `parent_id` int(10) '父节点ID',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=137 DEFAULT CHARSET=utf8;
 
@@ -186,6 +188,19 @@ CREATE TABLE `ks_user_role` (
   `gmt_create` datetime NOT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+--用户点赞表
+DROP TABLE IF EXISTS `ks_thumbs`;
+CREATE TABLE `ks_thumbs`  (
+  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '自增id',
+  `thumbs_id` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '评论唯一id',
+  `topic_category` int(1) NOT NULL COMMENT '1博客 2问答 3资源',
+  `topic_id` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '评论主题id',
+  `user_id` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '评论者id',
+  `thumbs_flag` int(1) NOT NULL COMMENT '-1踩 1赞同',
+  `gmt_create` datetime(0) NOT NULL COMMENT '评论创建时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 145 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

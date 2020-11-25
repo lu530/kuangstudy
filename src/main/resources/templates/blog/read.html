@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>问答-KuangStudy</title>
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+   <!-- <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap-theme.css}">-->
+    <link rel="stylesheet" th:href="@{/css/blog.css}">
     <style>
         .nav-underline .nav-link {
             padding-top: .75rem;
@@ -31,9 +33,9 @@
                     <a href="#" th:text="${blog.getAuthorName()}"></a>
                     <span>
                         <svg class="bi bi-eye-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-<path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
-<path fill-rule="evenodd" d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
-</svg>
+                        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                        <path fill-rule="evenodd" d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                        </svg>
                         [[${blog.getViews()}]]
                     </span>
                     <!-- 自己写的文章可以编辑和删除 -->
@@ -80,8 +82,22 @@
                 <input type="hidden" name="userAvatar" th:value="${session.loginUser.getAvatar()}">
                 <input type="hidden" name="topicId" th:value="${blog.getBid()}">
                 <div class="form-group">
-                    <textarea name="content" class="form-control" rows="3" required></textarea>
+                    <textarea name="content" class="form-control" rows="2" required></textarea>
                 </div>
+                <span th:if="${session.loginUser.getUid()}" id = "thumbsUp" th:bid="${blog.getBid()}" th:uid="${session.loginUser.getUid()}">
+                    <svg t="1606201362429" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2900" width="32" height="32">
+                        <path d="M881.066667 394.666667c-21.333333-23.466667-51.2-36.266667-81.066667-36.266667H618.666667v-117.333333c0-44.8-29.866667-85.333333-87.466667-117.333334-17.066667-10.666667-38.4-12.8-57.6-8.533333-19.2 4.266667-36.266667 17.066667-46.933333 34.133333-2.133333 2.133333-2.133333 4.266667-4.266667 6.4l-125.866667 281.6H204.8c-59.733333 0-108.8 46.933333-108.8 106.666667v258.133333c0 57.6 49.066667 106.666667 108.8 106.666667h544c53.333333 0 98.133333-38.4 106.666667-89.6l51.2-337.066667c4.266667-34.133333-6.4-64-25.6-87.466666z m-593.066667 448H204.8c-25.6 0-44.8-19.2-44.8-42.666667v-256c0-23.466667 19.2-42.666667 44.8-42.666667h83.2v341.333334z m554.666667-373.333334L789.333333 806.4c-4.266667 21.333333-21.333333 36.266667-42.666666 36.266667H352V471.466667l130.133333-290.133334c2.133333-4.266667 4.266667-4.266667 6.4-4.266666 2.133333 0 4.266667 0 8.533334 2.133333 25.6 14.933333 55.466667 38.4 55.466666 64v149.333333c0 17.066667 14.933333 32 32 32h213.333334c12.8 0 25.6 4.266667 34.133333 14.933334 8.533333 6.4 12.8 19.2 10.666667 29.866666z" p-id="2901">
+                        </path>
+                    </svg>
+                    <span id = "thumbsUpNum" th:value="${thumbs['-1']}" th:text="${thumbs['-1']}"></span>
+                </span>
+                <span th:if="${session.loginUser.getUid()}" id = "thumbsDown" th:bid="${blog.getBid()}" th:uid="${session.loginUser.getUid()}">
+                    <svg t="1606200890031" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2895" data-spm-anchor-id="a313x.7781069.0.i1" width="32" height="32">
+                        <path d="M904.533333 522.666667L853.333333 185.6c-8.533333-51.2-55.466667-89.6-106.666666-89.6H204.8c-59.733333 0-108.8 46.933333-108.8 106.666667v258.133333c0 57.6 49.066667 106.666667 108.8 106.666667h91.733333l125.866667 281.6c2.133333 2.133333 2.133333 4.266667 4.266667 6.4 14.933333 23.466667 38.4 36.266667 64 36.266666 12.8 0 25.6-4.266667 38.4-10.666666 57.6-34.133333 87.466667-72.533333 87.466666-117.333334v-117.333333h183.466667c32 0 59.733333-12.8 81.066667-36.266667 19.2-25.6 29.866667-55.466667 23.466666-87.466666z m-616.533333-21.333334H204.8c-25.6 0-44.8-19.2-44.8-42.666666v-256c0-23.466667 19.2-42.666667 44.8-42.666667h83.2v341.333333zM832 567.466667c-8.533333 8.533333-21.333333 14.933333-34.133333 14.933333h-213.333334c-17.066667 0-32 14.933333-32 32v149.333333c0 25.6-29.866667 49.066667-55.466666 64-4.266667 2.133333-10.666667 2.133333-14.933334-4.266666L352 533.333333V160H746.666667c21.333333 0 40.533333 14.933333 42.666666 36.266667L842.666667 533.333333c2.133333 10.666667-2.133333 23.466667-10.666667 34.133334z" p-id="2896" fill="#515151">
+                        </path>
+                    </svg>
+                    <span id = "thumbsDownNum" th:value="${thumbs['-1']}" th:text="${thumbs['-1']}"></span>
+                </span>
                 <button type="submit" class="btn btn-primary float-right">提交评论</button>
             </form>
         </div>
@@ -90,13 +106,46 @@
             <div class="my-3 p-3 bg-white rounded shadow-sm">
                 <h6 class="border-bottom border-gray pb-2 mb-0">评论列表</h6>
 
-                <div th:each="comment:${commentList}" class="media text-muted pt-3">
-                    <img th:src="${comment.getUserAvatar()}" style="border-radius: 5px;margin-right: 5px " width="32" height="32">
-                    <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                        <strong class="d-block text-gray-dark" th:text="${comment.getUserName()}"></strong>
-                        <span th:text="${comment.getContent()}"></span>
-                        <span th:text="${#dates.format(comment.getGmtCreate(),'yyyy-MM-dd')}" class="badge badge-light float-right"></span>
-                    </p>
+                <div th:each="commonTreeNode:${commentList}" >
+                    <div class="media text-muted pt-3 comment">
+                        <img th:src="${commonTreeNode.getUserAvatar()}" style="border-radius: 5px;margin-right: 5px " width="32" height="32">
+                        <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                            <strong class="d-block text-gray-dark" th:text="${commonTreeNode.getUserName()}"></strong>
+                            <span th:text="${commonTreeNode.getContent()}"></span>
+                            <span th:text="${#dates.format(commonTreeNode.getGmtCreate(),'yyyy-MM-dd')}" class="badge badge-light float-right"></span>
+                            <span class="badge badge-light float-right comment-reply-span show-hide-columns-button reply-close">回复</span>
+                        </p>
+                    </div>
+                    <div class="col-md-12 blog-main comment-reply-input hide" style="margin-top: 20px">
+                        <form th:action="@{'/blog/comment/'+${blog.getBid()}}" method="post">
+                            <input type="hidden" name="userId" th:value="${session.loginUser.getUid()}">
+                            <input type="hidden" name="userName" th:value="${session.loginUser.getUsername()}">
+                            <input type="hidden" name="userAvatar" th:value="${session.loginUser.getAvatar()}">
+                            <input type="hidden" name="topicId" th:value="${blog.getBid()}">
+                            <input type="hidden" name="userId" th:value="${commonTreeNode.getUserId()}">
+                            <input type="hidden" name="parentId" th:value="${commonTreeNode.getId()}">
+                            <div class="form-group">
+                                <textarea name="content" class="form-control" rows="1" required></textarea>
+                            </div>
+                           <button type="submit" class="btn btn-primary">提交</button>
+                        </form>
+                    </div>
+
+                    <div th:if="${null!=commonTreeNode.getSub()&&commonTreeNode.getSub().size()!=0}" class="col-md-12 blog-main" style="margin-top: 20px">
+                        <div class="my-3 p-3 bg-white rounded shadow-sm">
+                            <div th:each="commonTreeNode:${commonTreeNode.getSub()}" >
+                                <div class="media text-muted pt-3 comment">
+                                    <img th:src="${commonTreeNode.getUserAvatar()}" style="border-radius: 5px;margin-right: 5px " width="32" height="32">
+                                    <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                                        <strong class="d-block text-gray-dark" th:text="${commonTreeNode.getUserName()}"></strong>
+                                        <span th:text="${commonTreeNode.getContent()}"></span>
+                                        <span th:text="${#dates.format(commonTreeNode.getGmtCreate(),'yyyy-MM-dd')}" class="badge badge-light float-right"></span>
+                                       <!-- <span class="badge badge-light float-right comment-reply-span show-hide-columns-button reply-close">回复</span>-->
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -105,7 +154,6 @@
                 <h6 class="pb-2 mb-0 text-center">emmm... 这里暂时还没有评论....</h6>
             </div>
         </div>
-
     </div>
 
 
@@ -127,6 +175,7 @@
 <script th:src="@{/editormd/lib/flowchart.min.js}"></script>
 <script th:src="@{/editormd/lib/jquery.flowchart.min.js}"></script>
 <script th:src="@{/editormd/editormd.js}"></script>
+<script th:src="@{/js/bbs/blog.js}"></script>
 
 <script type="text/javascript">
     var testEditor;
@@ -140,7 +189,9 @@
             flowChart: true, // 默认不解析
             sequenceDiagram: true, // 默认不解析
             codeFold: true
-        });});
+        });
+        initEvent();
+    });
 
 </script>
 

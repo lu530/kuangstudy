@@ -15,7 +15,7 @@
 
     <div class="container">
 
-        <div th:if="${session.loginUser.getRoleId()==1}"
+        <div th:if="${session.loginUser !=null && session.loginUser.getRoleId()==1}"
              class="col-md-12 blog-main" style="margin-top: 20px">
             <form th:action="@{'/say/'+${session.loginUser.getRoleId()}}" method="post">
                 <div class="col-md-12 mb-3">

@@ -1,0 +1,30 @@
+{
+  "id": "2231020",
+  "name": "test",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "1346656",
+      "name": "勾号",
+      "font_class": "gouhao",
+      "unicode": "e62a",
+      "unicode_decimal": 58922
+    },
+    {
+      "icon_id": "15838425",
+      "name": "add-circle",
+      "font_class": "add-circle",
+      "unicode": "e664",
+      "unicode_decimal": 58980
+    },
+    {
+      "icon_id": "1146281",
+      "name": "iconfont_up",
+      "font_class": "icon11",
+      "unicode": "e60a",
+      "unicode_decimal": 58890
+    }
+  ]
+}

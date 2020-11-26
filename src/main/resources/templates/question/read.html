@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>问答-KuangStudy</title>
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/iconfont/iconfont.css}">
+    <link rel="stylesheet" th:href="@{/css/question.css}">
+
     <style>
         .nav-underline .nav-link {
             padding-top: .75rem;
@@ -36,8 +39,9 @@
 </svg>
                         [[${question.getViews()}]]
                     </span>
+
                     <!-- 自己写的文章可以编辑和删除 -->
-                    <a th:if="${session.loginUser.getUid()==question.getAuthorId()}"
+                    <a th:if="${session.loginUser!=null && session.loginUser.getUid()==question.getAuthorId()}"
                        class="float-right" style="color: red"
                        th:href="@{'/question/delete/'+${session.loginUser.getUid()}+'/'+${question.getQid()}}"
                        onclick="if(!confirm('你确认要删除吗？')) return false;">
@@ -48,7 +52,7 @@
                         </svg>
                         删除
                     </a>
-                    <a th:if="${session.loginUser.getUid()==question.getAuthorId()}"
+                    <a th:if="${session.loginUser!=null && session.loginUser.getUid()==question.getAuthorId()}"
                        class="float-right mr-3"
                        th:href="@{'/question/editor/'+${session.loginUser.getUid()}+'/'+${question.getQid()}}">
                         <svg class="bi bi-pencil-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -57,6 +61,12 @@
                         </svg>
                         编辑
                     </a>
+                    <a th:if="${session.loginUser!=null && session.loginUser.getUid()==question.getAuthorId() && question.getStatus() !=1}"
+                       class="float-right"
+                       th:href="@{'/question/done/'+${question.getQid()}}">
+                        <span class="icon iconfont icongouhao" >解决</span>
+                    </a>
+                    <span th:if="${question.getStatus()==1}" class="icon iconfont icongouhao mr-3">已解决</span>
                 </p>
             </div>
 
@@ -72,15 +82,18 @@
         <div class="col-md-12 blog-main" style="margin-top: 20px">
             <hr>
         </div>
+        <div th:if="${session.loginUser ==null}" class="col-md-12 blog-main" style="margin-top: 20px">
+           <p>登录后评论</p>
+        </div>
 
-        <div class="col-md-12 blog-main" style="margin-top: 20px">
+        <div th:if="${session.loginUser !=null}" class="col-md-12 blog-main" style="margin-top: 20px">
             <form th:action="@{'/question/comment/'+${question.getQid()}}" method="post">
                 <input type="hidden" name="userId" th:value="${session.loginUser.getUid()}">
                 <input type="hidden" name="userName" th:value="${session.loginUser.getUsername()}">
                 <input type="hidden" name="userAvatar" th:value="${session.loginUser.getAvatar()}">
                 <input type="hidden" name="topicId" th:value="${question.getQid()}">
                 <div class="form-group">
-                    <textarea required name="content" class="form-control" rows="3"></textarea>
+                    <textarea required name="content" class="form-control" rows="2"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary float-right">提交评论</button>
             </form>
@@ -90,16 +103,67 @@
             <div class="my-3 p-3 bg-white rounded shadow-sm">
                 <h6 class="border-bottom border-gray pb-2 mb-0">评论列表</h6>
 
-                <div th:each="comment:${commentList}" class="media text-muted pt-3">
-                    <img th:src="${comment.getUserAvatar()}" style="border-radius: 5px;margin-right: 5px " width="32" height="32">
-                    <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                        <strong class="d-block text-gray-dark" th:text="${comment.getUserName()}"></strong>
-                        <span th:text="${comment.getContent()}"></span>
-                        <span th:text="${#dates.format(comment.getGmtCreate(),'yyyy-MM-dd')}" class="badge badge-light float-right"></span>
-                    </p>
+                <div th:each="commonTreeNode:${commentList}" >
+                    <div class="media text-muted pt-3 comment">
+                        <img th:src="${commonTreeNode.getUserAvatar()}" style="border-radius: 5px;margin-right: 5px " width="32" height="32">
+                        <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                            <strong class="d-block text-gray-dark" th:text="${commonTreeNode.getUserName()}"></strong>
+                            <span th:text="${commonTreeNode.getContent()}"></span>
+                            <span th:text="${#dates.format(commonTreeNode.getGmtCreate(),'yyyy-MM-dd')}" class="badge badge-light float-right"></span>
+                            <span th:if="${session.loginUser !=null}" class="badge badge-light float-right comment-reply-span show-hide-columns-button reply-close">回复</span>
+                        </p>
+                    </div>
+                    <div th:if="${session.loginUser !=null}" class="col-md-12 blog-main comment-reply-input hide" style="margin-top: 20px">
+                        <form th:action="@{'/question/comment/'+${question.getQid()}}" method="post">
+                            <input type="hidden" name="userId" th:value="${session.loginUser.getUid()}">
+                            <input type="hidden" name="userName" th:value="${session.loginUser.getUsername()}">
+                            <input type="hidden" name="userAvatar" th:value="${session.loginUser.getAvatar()}">
+                            <input type="hidden" name="topicId" th:value="${question.getQid()}">
+                            <input type="hidden" name="userId" th:value="${commonTreeNode.getUserId()}">
+                            <input type="hidden" name="parentId" th:value="${commonTreeNode.getId()}">
+                            <div class="form-group">
+                                <textarea name="content" class="form-control" rows="1" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">提交</button>
+                        </form>
+                    </div>
+
+                    <div th:if="${null!=commonTreeNode.getSub()&&commonTreeNode.getSub().size()!=0}" class="col-md-12 blog-main" style="margin-top: 20px">
+                        <div class="my-3 p-3 bg-white rounded shadow-sm">
+                            <div th:each="commonTreeNode:${commonTreeNode.getSub()}" >
+                                <div class="media text-muted pt-3 comment">
+                                    <img th:src="${commonTreeNode.getUserAvatar()}" style="border-radius: 5px;margin-right: 5px " width="32" height="32">
+                                    <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                                        <strong class="d-block text-gray-dark" th:text="${commonTreeNode.getUserName()}"></strong>
+                                        <span th:text="${commonTreeNode.getContent()}"></span>
+                                        <span th:text="${#dates.format(commonTreeNode.getGmtCreate(),'yyyy-MM-dd')}" class="badge badge-light float-right"></span>
+                                        <!-- <span class="badge badge-light float-right comment-reply-span show-hide-columns-button reply-close">回复</span>-->
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
+
+        <!--       <div th:if="${commentList.size()!=0}" class="col-md-12 blog-main" style="margin-top: 20px">
+                   <div class="my-3 p-3 bg-white rounded shadow-sm">
+                       <h6 class="border-bottom border-gray pb-2 mb-0">评论列表</h6>
+
+                       <div th:each="comment:${commentList}" class="media text-muted pt-3">
+                           <img th:src="${comment.getUserAvatar()}" style="border-radius: 5px;margin-right: 5px " width="32" height="32">
+                           <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                               <strong class="d-block text-gray-dark" th:text="${comment.getUserName()}"></strong>
+                               <span th:text="${comment.getContent()}"></span>
+                               <span th:text="${#dates.format(comment.getGmtCreate(),'yyyy-MM-dd')}" class="badge badge-light float-right"></span>
+                           </p>
+                       </div>
+                   </div>
+               </div>-->
+
+
         <div th:if="${commentList.size()==0}" class="col-md-12 blog-main" style="margin-top: 20px">
             <div class="my-3 p-3 bg-white rounded shadow-sm">
                 <h6 class="pb-2 mb-0 text-center">emmm... 这里暂时还没有评论....</h6>
@@ -127,6 +191,7 @@
 <script th:src="@{/editormd/lib/flowchart.min.js}"></script>
 <script th:src="@{/editormd/lib/jquery.flowchart.min.js}"></script>
 <script th:src="@{/editormd/editormd.js}"></script>
+<script th:src="@{/js/bbs/question.js}"></script>
 
 <script type="text/javascript">
     var testEditor;
@@ -140,7 +205,9 @@
             flowChart: true, // 默认不解析
             sequenceDiagram: true, // 默认不解析
             codeFold: true
-        });});
+        });
+        initEvent();
+    });
 </script>
 
 </body>

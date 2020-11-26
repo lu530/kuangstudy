@@ -4,6 +4,7 @@ package com.kuang.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.kuang.cache.ViewsCache;
 import com.kuang.pojo.Comment;
 import com.kuang.pojo.Question;
 import com.kuang.pojo.QuestionCategory;
@@ -11,6 +12,7 @@ import com.kuang.service.CommentService;
 import com.kuang.service.QuestionCategoryService;
 import com.kuang.service.QuestionService;
 import com.kuang.utils.KuangUtils;
+import com.kuang.vo.CommentTreeNode;
 import com.kuang.vo.QuestionWriteForm;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.thymeleaf.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -46,6 +49,9 @@ public class QuestionController {
     QuestionService questionService;
     @Autowired
     CommentService commentService;
+
+    @Autowired
+    ViewsCache viewsCache;
 
 
     // 问题列表展示
@@ -127,14 +133,20 @@ public class QuestionController {
 
     // 阅读问题
     @GetMapping("/question/read/{qid}")
-    public String read(@PathVariable("qid") String qid,Model model){
+    public String read(@PathVariable("qid") String qid,Model model,HttpServletRequest req){
         Question question = questionService.getOne(new QueryWrapper<Question>().eq("qid", qid));
-        // todo: redis缓存. 防止阅读重复
-        question.setViews(question.getViews()+1);
+        // 防止阅读重复
+        String ip = KuangUtils.getIP(req);
+        if(StringUtils.isEmpty(viewsCache.getIpPid(ip + "_" + qid))){
+            question.setViews(question.getViews()+1);
+            viewsCache.putIpPid(ip + "_" + qid, qid);
+        }
+
         questionService.updateById(question);
         model.addAttribute("question",question);
-        // todo： 查询评论.
-        List<Comment> commentList = commentService.list(new QueryWrapper<Comment>().eq("topic_id", qid).orderByDesc("gmt_create"));
+        List<CommentTreeNode> commentList = commentService.tree(new QueryWrapper<Comment>().eq("topic_id", qid).orderByDesc("gmt_create"));
+
+        //List<Comment> commentList = commentService.list(new QueryWrapper<Comment>().eq("topic_id", qid).orderByDesc("gmt_create"));
         model.addAttribute("commentList",commentList);
         return "question/read";
     }
@@ -147,6 +159,17 @@ public class QuestionController {
         comment.setTopicCategory(2);
         comment.setGmtCreate(KuangUtils.getTime());
         commentService.save(comment);
+        // 状态改为已解决
+      /*  Question question = quest ionService.getOne(new QueryWrapper<Question>().eq("qid", qid));
+        question.setStatus(1);
+        questionService.updateById(question);*/
+        // 重定向到列表页面
+        return "redirect:/question/read/"+qid;
+    }
+
+    // 作者标记为已解决
+    @GetMapping("/question/done/{qid}")
+    public String done(@PathVariable("qid") String qid){
         // 状态改为已解决
         Question question = questionService.getOne(new QueryWrapper<Question>().eq("qid", qid));
         question.setStatus(1);

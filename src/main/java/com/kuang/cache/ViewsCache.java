@@ -15,6 +15,13 @@ public class ViewsCache {
             .variableExpiration()
             .build();
 
+    ExpiringMap<String,String> questionView = ExpiringMap.builder()
+            .maxSize(1000)//最大容量，防止恶意注入
+            .expiration(1, TimeUnit.HOURS)//过期时间5分钟
+            .expirationPolicy(ExpirationPolicy.CREATED)
+            .variableExpiration()
+            .build();
+
 
     public void putIpBid(String ipBid,String bid){
         blogView.put(ipBid,bid);
@@ -22,6 +29,14 @@ public class ViewsCache {
 
     public String getIpBid(String ipBid){
         return blogView.get(ipBid);
+    }
+
+    public void putIpPid(String ipPid,String pid){
+        questionView.put(ipPid,pid);
+    }
+
+    public String getIpPid(String ipPid){
+        return questionView.get(ipPid);
     }
 
 }

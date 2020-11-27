@@ -8,10 +8,10 @@
 		<version>2.3.0.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.kuang</groupId>
-	<artifactId>kuangstudy</artifactId>
+	<groupId>com.fclub</groupId>
+	<artifactId>fclub</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>kuangstudy</name>
+	<name>fclub</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
@@ -103,6 +103,11 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 <!--		<dependency>-->
 <!--			<groupId>org.springframework.boot</groupId>-->

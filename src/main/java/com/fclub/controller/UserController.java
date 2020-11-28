@@ -4,14 +4,9 @@ package com.fclub.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.fclub.pojo.Blog;
-import com.fclub.pojo.Comment;
-import com.fclub.pojo.Question;
-import com.fclub.pojo.UserInfo;
-import com.fclub.service.BlogService;
-import com.fclub.service.CommentService;
-import com.fclub.service.QuestionService;
-import com.fclub.service.UserInfoService;
+import com.fclub.dto.ResultDTO;
+import com.fclub.pojo.*;
+import com.fclub.service.*;
 import com.fclub.utils.KuangUtils;
 import com.fclub.vo.LayerPhoto;
 import com.fclub.vo.LayerPhotoData;
@@ -42,6 +37,9 @@ public class UserController {
     QuestionService questionService;
     @Autowired
     CommentService commentService;
+
+    @Autowired
+    UserService userService;
 
     @GetMapping("/user/{uid}")
     public String userIndex(@PathVariable String uid, Model model){
@@ -171,6 +169,19 @@ public class UserController {
         // 用户信息回填
         userInfoCallBack(uid,model);
         return "user/update-avatar";
+    }
+
+    // 更新头像
+    @PostMapping("/user/update/avatar")
+    @ResponseBody
+    public ResultDTO updateAvatar(String userId, String url){//url
+        User user = userService.getOne(new QueryWrapper<User>().eq("uid", userId));
+        if(null == user){
+            return ResultDTO.errorOf("无法查询该用户信息");
+        }
+        user.setAvatar(url);
+        userService.updateById(user);
+        return ResultDTO.okOf();
     }
 
 }

@@ -78,8 +78,8 @@
         <aside class="col-md-3 blog-sidebar">
 
             <div class="my-3 rounded">
-                <p class="mb-0">
-                    <a th:href="@{/blog/write}" class="btn btn-primary btn-sm btn-block" style="color: white">写文章</a>
+                <p  class="mb-0">
+                    <a th:href="${session.loginUser !=null? '/blog/write':'/toLogin'}" class="btn btn-primary btn-sm btn-block" style="color: white">写文章</a>
                 </p>
             </div>
 

@@ -83,7 +83,7 @@
 
             <div class="my-3 rounded">
                 <p class="mb-0">
-                    <a th:href="@{/question/write}" class="btn btn-primary btn-sm btn-block" style="color: white">发布问题</a>
+                    <a th:href="${session.loginUser !=null? '/question/write':'/toLogin'}"  class="btn btn-primary btn-sm btn-block" style="color: white">发布问题</a>
                 </p>
             </div>
 

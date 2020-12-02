@@ -50,10 +50,15 @@ public class BlogController {
 
     // 列表展示
     @GetMapping("/blog")
-    public String blogList(Model model){
-
+    public String blogList(String kws, Model model){
+        QueryWrapper<Blog> query = new QueryWrapper();
         Page<Blog> pageParam = new Page<>(1, 10);
-        blogService.page(pageParam,new QueryWrapper<Blog>().orderByDesc("gmt_create"));
+        if(!StringUtils.isEmpty(kws)){
+            query.like("title", kws).or().like("content", kws);
+        }
+        query.orderByDesc("gmt_create");
+        blogService.page(pageParam,query);
+
         // 结果
         List<Blog> blogList = pageParam.getRecords();
         model.addAttribute("blogList",blogList);
@@ -61,22 +66,31 @@ public class BlogController {
 
         // 分类信息
         List<BlogCategory> categoryList = blogCategoryService.list(null);
-        model.addAttribute("categoryList",categoryList);
+        model.addAttribute("categoryList", categoryList);
+        model.addAttribute("kws", KuangUtils.toString(kws));
 
         return "blog/list";
     }
 
     @GetMapping("/blog/{page}/{limit}")
     public String blogListPage(
+            String kws,
             @PathVariable int page,
             @PathVariable int limit,
             Model model){
+        QueryWrapper<Blog> query = new QueryWrapper();
 
         if (page < 1){
             page = 1;
         }
+
+        if(!StringUtils.isEmpty(kws)){
+            query.like("title", kws).or().like("content", kws);
+        }
+
+        query.orderByDesc("gmt_create");
         Page<Blog> pageParam = new Page<>(page, limit);
-        blogService.page(pageParam,new QueryWrapper<Blog>().orderByDesc("gmt_create"));
+        blogService.page(pageParam,query);
 
         // 结果
         List<Blog> blogList = pageParam.getRecords();
@@ -86,7 +100,7 @@ public class BlogController {
         // 分类信息
         List<BlogCategory> categoryList = blogCategoryService.list(null);
         model.addAttribute("categoryList",categoryList);
-
+        model.addAttribute("kws",KuangUtils.toString(kws));
         return "blog/list";
     }
 
@@ -106,6 +120,11 @@ public class BlogController {
         blog.setBid(KuangUtils.getUuid());
         blog.setTitle(questionWriteForm.getTitle());
         blog.setContent(questionWriteForm.getContent());
+
+        String contentWithOutPic = questionWriteForm.getContent().replaceAll("!\\[\\]\\(.*\\)", "");
+
+        String subTitle = contentWithOutPic.length() < 130? contentWithOutPic:contentWithOutPic.replaceAll("\n","").substring(0,130);
+        blog.setSubtitle(subTitle);
         blog.setSort(0);
         blog.setViews(0);
 
@@ -178,6 +197,10 @@ public class BlogController {
         queryBlog.setCategoryId(blog.getCategoryId());
         queryBlog.setContent(blog.getContent());
         queryBlog.setGmtUpdate(KuangUtils.getTime());
+        String contentWithOutPic = blog.getContent().replaceAll("!\\[\\]\\(.*\\)", "");
+        String subTitle = contentWithOutPic.length() < 130? contentWithOutPic:contentWithOutPic.replaceAll("\n","").substring(0,130);
+        queryBlog.setSubtitle(subTitle);
+
 
         blogService.updateById(queryBlog);
 

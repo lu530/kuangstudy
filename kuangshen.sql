@@ -35,6 +35,7 @@ CREATE TABLE `ks_blog` (
   `category_name` varchar(50) NOT NULL COMMENT '问题分类名称',
   `gmt_create` datetime NOT NULL COMMENT '创建时间',
   `gmt_update` datetime NOT NULL COMMENT '修改时间',
+  `subTitle` varchar(255) COMMENT '副标题',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
 
@@ -109,6 +110,7 @@ CREATE TABLE `ks_question` (
   `category_name` varchar(50) NOT NULL COMMENT '问题分类名称',
   `gmt_create` datetime NOT NULL COMMENT '创建时间',
   `gmt_update` datetime NOT NULL COMMENT '修改时间',
+   `subTitle` varchar(255) COMMENT '副标题',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
 

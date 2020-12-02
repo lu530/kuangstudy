@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fclub.cache.ViewsCache;
+import com.fclub.pojo.Blog;
 import com.fclub.pojo.Comment;
 import com.fclub.pojo.Question;
 import com.fclub.pojo.QuestionCategory;
@@ -54,32 +55,45 @@ public class QuestionController {
 
     // 问题列表展示
     @GetMapping("/question")
-    public String questionList(Model model){
+    public String questionList(String kws, Model model){
+        QueryWrapper<Question> query = new QueryWrapper();
         Page<Question> pageParam = new Page<>(1, 10);
-        questionService.page(pageParam,new QueryWrapper<Question>().orderByDesc("gmt_create"));
+
+        if(!StringUtils.isEmpty(kws)){
+            query.like("title", kws).or().like("content", kws);
+        }
+
+        query.orderByDesc("gmt_create");
+        questionService.page(pageParam, query);
         // 结果
         List<Question> questionList = pageParam.getRecords();
-        model.addAttribute("questionList",questionList);
-        model.addAttribute("pageParam",pageParam);
+        model.addAttribute("questionList", questionList);
+        model.addAttribute("pageParam", pageParam);
 
         // 分类信息
         List<QuestionCategory> categoryList = questionCategoryService.list(null);
-        model.addAttribute("categoryList",categoryList);
+        model.addAttribute("categoryList", categoryList);
+        model.addAttribute("kws", KuangUtils.toString(kws));
 
         return "question/list";
     }
 
     @GetMapping("/question/{page}/{limit}")
-    public String questionListPage(
+    public String questionListPage(String kws,
             @PathVariable int page,
             @PathVariable int limit,
             Model model){
+        QueryWrapper<Question> query = new QueryWrapper();
 
         if (page < 1){
             page = 1;
         }
+        if(!StringUtils.isEmpty(kws)){
+            query.like("title", kws).or().like("content", kws);
+        }
         Page<Question> pageParam = new Page<>(page, limit);
-        questionService.page(pageParam,new QueryWrapper<Question>().orderByDesc("gmt_create"));
+        query.orderByDesc("gmt_create");
+        questionService.page(pageParam,query);
 
         // 结果
         List<Question> questionList = pageParam.getRecords();
@@ -89,6 +103,7 @@ public class QuestionController {
         // 分类信息
         List<QuestionCategory> categoryList = questionCategoryService.list(null);
         model.addAttribute("categoryList",categoryList);
+        model.addAttribute("kws",KuangUtils.toString(kws));
 
         return "question/list";
     }
@@ -122,6 +137,10 @@ public class QuestionController {
         question.setCategoryName(category.getCategory());
         question.setGmtCreate(KuangUtils.getTime());
         question.setGmtUpdate(KuangUtils.getTime());
+
+        String contentWithOutPic = question.getContent().replaceAll("!\\[\\]\\(.*\\)", "");
+        String subTitle = contentWithOutPic.length() < 130? contentWithOutPic:contentWithOutPic.replaceAll("\n","").substring(0,130);
+        question.setSubtitle(subTitle);
         // 存储对象
         questionService.save(question);
 
@@ -204,6 +223,10 @@ public class QuestionController {
         queryQuestion.setContent(question.getContent());
         queryQuestion.setGmtUpdate(KuangUtils.getTime());
 
+        String contentWithOutPic = question.getContent().replaceAll("!\\[\\]\\(.*\\)", "");
+        String subTitle = contentWithOutPic.length() < 130? contentWithOutPic:contentWithOutPic.replaceAll("\n","").substring(0,130);
+        queryQuestion.setSubtitle(subTitle);
+
         questionService.updateById(queryQuestion);
 
         return "redirect:/question/read/"+question.getQid();
@@ -271,6 +294,9 @@ public class QuestionController {
 
         return res;
     }
+
+
+
 
 
 }

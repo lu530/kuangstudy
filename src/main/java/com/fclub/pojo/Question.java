@@ -72,4 +72,8 @@ public class Question implements Serializable {
     private Date gmtUpdate;
 
 
+    @ApiModelProperty(value = "内容概要")
+    private String subtitle;
+
+
 }

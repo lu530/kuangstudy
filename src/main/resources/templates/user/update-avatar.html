@@ -19,7 +19,7 @@
         <div class="col-md-9 blog-main">
             <div class="my-3 p-3 bg-white rounded shadow-sm">
                 <button class="layui-btn userIcon" lay-data="{url: '/user/file/upload'}"  name="img_upload">上传图片</button>
-                <button class="layui-btn layui-hide"  name="uploadBtn">确定上传</button>
+                <button class="layui-btn layui-hide"  name="uploadBtn">确定更换</button>
                 <img th:src="${session.loginUser.getAvatar()}" id = "userIcon" style="border-radius: 50%" width="128" height="128">
                 <input type="hidden" name="uid" th:value="${session.loginUser.getUid()}">
             </div>
@@ -63,7 +63,7 @@
             if(res.success == 1){
                 $("#userIcon").attr("src", res.url);
                 $("[name='uploadBtn']").removeClass("layui-hide");
-                $(item).addClass("layui-hide");
+              //  $(item).addClass("layui-hide");
             }
         }
     })

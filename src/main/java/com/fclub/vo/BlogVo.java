@@ -1,15 +1,16 @@
-package com.fclub.pojo;
+package com.fclub.vo;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -21,10 +22,8 @@ import lombok.experimental.Accessors;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@TableName("ks_blog")
 @ApiModel(value="Blog对象", description="")
-public class Blog implements Serializable {
+public class BlogVo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -69,7 +68,7 @@ public class Blog implements Serializable {
     private Date gmtUpdate;
 
     @ApiModelProperty(value = "内容概要")
-    private String subtitle;
+    private Date subtitle;
 
 
 }

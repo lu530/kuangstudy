@@ -16,7 +16,7 @@ public class TemporaryCache {
             .build();
 
 
-    public void putMailCode(String mail,String code){
+     public void putMailCode(String mail,String code){
         mailCode.put(mail,code);
     }
 

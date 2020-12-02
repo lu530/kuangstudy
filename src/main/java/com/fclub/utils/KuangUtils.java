@@ -2,10 +2,14 @@ package com.fclub.utils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class KuangUtils {
+public class KuangUtils<T> {
 
     static boolean printFlag = true;
 
@@ -39,5 +43,29 @@ public class KuangUtils {
         }
         return ip;
     }
+
+    public static String toString(String obj){
+        return obj == null ? "" : trim(obj.toString());
+    }
+
+    public static String trim(String str, String forNull) {
+        return str == null ? forNull : str.trim();
+    }
+
+    public static String trim(String str) {
+        return trim(str, "");
+    }
+
+
+
+
+    public static String getSubTitle(String title){
+        String pattern = "!\\[\\]\\(.*\\)";
+
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(title);
+        return null;
+    }
+
 
 }

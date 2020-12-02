@@ -5,19 +5,105 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>首页-FClub</title>
     <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/iconfont/iconfont.css}">
 </head>
 <body>
 
 <div th:replace="~{common/header::header(activeUrl='index.html')}"></div>
 
 <main role="main">
-    <div class="jumbotron" style="background-color: #ffffff;box-shadow: 0px -2px 10px #d0cccc inset;">
+   <!-- <div class="jumbotron" style="background-color: #ffffff;box-shadow: 0px -2px 10px #d0cccc inset;">
 
-    </div>
+    </div>-->
 
     <div class="container">
 
+        <form action="/search" class="form-inline" style="margin-top: 5%;margin-left: 35%;">
+            <div class="form-group">
+                <input placeholder="关键字检索" name="kws" class="form-control" autocomplete="off" th:value="${kws}" >
+                <button  type="submit" class ="btn btn-primary">
+                    <span class="iconfont iconsousuo"></span>
+                </button>
+
+            </div>
+        </form>
+
         <div class="row">
+            <div class="col-md-9 blog-main">
+
+                <div class="my-3 p-3 bg-white rounded shadow-sm">
+                <h6 th:if = "${null != total}" class="border-bottom border-gray pb-2 mb-0" style="height: 50px;">
+                    Q&A 累计：
+                    <span th:text="${total}"></span>
+                </h6>
+
+                <div th:each="question:${questionList}" class="media text-muted pt-3">
+                    <!-- 头像 -->
+                    <img th:src="${question.getAuthorAvatar()}" style="border-radius: 5px " width="32" height="32">
+                    <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray" style="margin-left: 5px">
+                        <!-- 标题 -->
+                        <a th:text="${question.getTitle()}"
+                           th:href="@{'/question/read/'+${question.getQid()}}"
+                           class="text-dark font-weight-bold text-decoration-none d-block">
+                        </a>
+                        <span th:text="${question.getStatus()==0?'未解决':'已解决'}"
+                              th:class="${question.getStatus()==0?'badge badge-warning':'badge badge-info'}">
+                        </span>
+                        <!-- 浏览量 -->
+                        <span>
+                                <svg class="bi bi-eye-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                                  <path fill-rule="evenodd" d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                                </svg>
+                                <span style="color:red">[[${question.getViews()}]]</span>
+                            </span>
+                        &nbsp;
+                        <span>
+                                [[${question.getSubtitle()}]]
+                            </span>
+                        <!-- 时间 -->
+                        <span th:text="${#dates.format(question.getGmtUpdate(),'yyyy-MM-dd')}"
+                              class="badge badge-light float-right">
+                            </span>
+                    </p>
+                </div>
+
+
+                <div th:each="blog:${blogList}" class="media text-muted pt-3">
+                    <!-- 头像 -->
+                    <img th:src="${blog.getAuthorAvatar()}" style="border-radius: 5px " width="32" height="32">
+                    <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray" style="margin-left: 5px">
+                        <!-- 标题 -->
+                        <a th:text="${blog.getTitle()}"
+                           th:href="@{'/blog/read/'+${blog.getBid()}}"
+                           class="text-dark font-weight-bold text-decoration-none d-block">
+                        </a>
+                        <span class="badge badge-info">
+                            博客
+                        </span>
+                        <!-- 浏览量 -->
+                        <span>
+                                <svg class="bi bi-eye-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                                  <path fill-rule="evenodd" d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                                </svg>
+                                <span style="color:red">[[${blog.getViews()}]]</span>
+                            </span>
+                        &nbsp;
+                        <span>
+                                [[${blog.getSubtitle()}]]
+                            </span>
+                        <!-- 时间 -->
+                        <span th:text="${#dates.format(blog.getGmtUpdate(),'yyyy-MM-dd')}"
+                              class="badge badge-light float-right">
+                            </span>
+                    </p>
+                </div>
+                </div>
+        </div>
+    </div>
+
+   <!--     <div class="row">
             <div class="col-md-4">
                 <h2>问答</h2>
                 <p> 提供高质量的问答服务，致力于解决社区中小伙伴们遇到的问题，并给出解决方案，做到学有所伴，问有所答！</p>
@@ -33,15 +119,13 @@
                 <p> 很多时候，小伙伴找不到，导致浪费了很多的时间，所以列出教程给大家规划学习路线，让大家能够少走弯路，高效的学习！</p>
                 <p><a target="_blank" href="https://space.bilibili.com/95256449/channel/index" class="btn btn-secondary" role="button">前往 »</a></p>
             </div>
-        </div>
+        </div>-->
 
-        <hr>
+
 
     </div>
 </main>
-
 <div th:replace="~{common/footer::footer}"></div>
-
 <a class="to-top">返回顶部</a>
 <script th:src="@{/js/jquery-3.5.1.min.js}"></script>
 <script th:src="@{/bootstrap/js/bootstrap.bundle.min.js}"></script>

@@ -25,7 +25,7 @@ start() {
    if [ $? -eq "0" ]; then
      echo "${APP_NAME} is already running. pid=${pid} ."
    else
-      java -jar $APP_NAME 2>&1 &
+      java -jar $APP_NAME --spring.config.location=./config/application-dev.properties 2>&1 &
 #      nohup java -jar $APP_NAME --server.port=83> /dev/null 2>&1 &
    fi
 }

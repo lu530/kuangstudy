@@ -25,9 +25,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // .permitAll();    //无条件允许访问
         // 访问权限
         http.authorizeRequests()
-                .antMatchers("/","/index").permitAll()
-                .antMatchers("/register","/login","/toLogin").permitAll();
-               // .antMatchers("/*").authenticated();
+                .antMatchers("/", "/index").permitAll()
+                .antMatchers("/register", "/login","/toLogin").permitAll()
+                .antMatchers("/user/update/avatar",
+                        "/blog/write",
+                        "/blog/editor",
+                        "/blog/delete/**",
+                        "/blog/comment/*",
+                        "/user/comment/delete/**",
+                        "/question/write",
+                        "/question/comment/*",
+                        "/question/done/*",
+                        "/question/editor",
+                        "/question/delete/**",
+                        "/question/write/file/upload",
+                        "/thumbs/add",
+                        "/userinfo/update/*",
+                        "/user/file/upload"
+                        ).authenticated();
 
         // 登录配置
         http.formLogin()

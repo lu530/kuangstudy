@@ -20,13 +20,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.ResourceUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * 即时通信整合到各个小网站上的练习
+ * vue
+ */
 @Controller
 public class LoginController {
 
@@ -62,6 +69,56 @@ public class LoginController {
     @GetMapping("/register")
     public String toRegister(){
         return "register";
+    }
+
+
+    /**
+     * Retrieve password
+     * @return
+     */
+    @GetMapping("/retrieve/password")
+    public String toRetrievePassword(){
+        return "retrievePassword";
+    }
+
+    // 注册业务
+    @RequestMapping("/retrieve/password")
+    public String retrievePassword(RegisterForm registerForm,Model model){
+        KuangUtils.print("注册表单信息："+registerForm.toString());
+        // 表单密码重复判断
+        if (!registerForm.getPassword().equals(registerForm.getRepassword())){
+            model.addAttribute("registerMsg","密码输入有误");
+            return "retrievePassword";
+        }
+
+
+        String mailCode = temporaryCache.getMailCode(registerForm.getEmail());
+        if(!mailCode.equals(registerForm.getCode())){
+            model.addAttribute("registerMsg","验证码不正确");
+            return "retrievePassword";
+        }
+
+
+        UserInfo userInfo = userInfoService.getOne(new QueryWrapper<UserInfo>().eq("email", registerForm.getEmail()));
+        if(null == userInfo){
+            model.addAttribute("registerMsg","该邮箱还没有注册过，请注册！");
+            return "retrievePassword";
+        }
+
+        User user = userService.getOne(new QueryWrapper<User>().eq("uid", userInfo.getUid()));
+        // 密码加密
+        String bCryptPassword = new BCryptPasswordEncoder().encode(registerForm.getPassword());
+        user.setPassword(bCryptPassword);
+        user.setLoginDate(KuangUtils.getTime());
+        // 保存对象！
+        userService.updateById(user);
+        KuangUtils.print("修改密码成功："+user);
+
+        model.addAttribute("username",user.getUsername());
+        model.addAttribute("message","修改成功，请登录！");
+        // 注册成功，重定向到登录页面
+        return "login";
+
     }
 
     // 注册业务
@@ -101,7 +158,6 @@ public class LoginController {
         invite.setStatus(1);
         invite.setUid(user.getUid());
         inviteService.updateById(invite);
-
         */
         // 构建用户对象
         User user = new User();
@@ -134,20 +190,32 @@ public class LoginController {
      * @return 图片验证界面
      */
     @RequestMapping("imgValidate")
-    public String toImgValidate(ModelMap map, String email){
+    public String toImgValidate(ModelMap map, String email, boolean rePassword){
         map.addAttribute("telephone",email);
+        map.addAttribute("rePassword",rePassword);
         return "common/imageValidate";
     }
 
     @RequestMapping("createImgValidate")
     @ResponseBody
-    public Map<String,Object> createImgValidate(String email){
+    public Map<String,Object> createImgValidate(String email, boolean rePassword){
         Map<String, Object> result = new HashMap<String, Object>();
         try {
+            int emailCount = userInfoService.count(new QueryWrapper<UserInfo>().eq("email", email));
+            if(!rePassword && emailCount > 0){
+                result.put("status", 504);
+                result.put("info","邮箱号已经注册过,请通过找回密码功能找回密码！");
+                return result;
+            }else if(rePassword && emailCount <= 0){
+                result.put("status", 504);
+                result.put("info","邮箱号没有注册过,请注册！");
+                return result;
+            }
+
             Integer templateNum = new Random().nextInt(4) + 1;
             Integer targetNum = new Random().nextInt(20) + 1;
-            File templateFile = ResourceUtils.getFile("classpath:static/images/template/"+templateNum+".png");
-            File targetFile = ResourceUtils.getFile("classpath:static/images/target/"+targetNum+".jpg");
+            File templateFile = ResourceUtils.getFile(System.getProperty("user.dir")+"/upload/images/template/"+templateNum+".png");
+            File targetFile = ResourceUtils.getFile(System.getProperty("user.dir")+"/upload/images/target/"+targetNum+".jpg");
             PictureTemplagtesCutDto pictureTemplagtesCutDto = VerifyImageUtil.pictureTemplatesCut(templateFile, targetFile,
                     ConstString.IMAGE_TYPE_PNG, ConstString.IMAGE_TYPE_JPG);
             // 将生成的偏移位置信息设置到redis中

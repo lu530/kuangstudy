@@ -1,5 +1,5 @@
 
-function imageValidate(){
+function imageValidate(rePassword){
     var mailCount =  $('[name="email"]').val();
    // var mailCount = $("[]").val();
     if(!mailCount){
@@ -15,6 +15,6 @@ function imageValidate(){
         area: ['750px', '550px'],
         fixed: false, //不固定
         maxmin: true,
-        content: serverPath + '/imgValidate?email=' + mailCount
+        content: serverPath + '/imgValidate?email=' + mailCount + '&rePassword=' + rePassword
     });
 }

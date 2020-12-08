@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 博客 和 问题阅读量加+ 的时间
+ */
 @Component
 public class ViewsCache {
     ExpiringMap<String,String> blogView = ExpiringMap.builder()

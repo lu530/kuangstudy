@@ -56,14 +56,18 @@ function initImageValidate(){
         url : "/createImgValidate",
         dataType: "json",
         data:{
-            email:telephone
+            email:telephone,
+            rePassword:rePassword
         },
         success : function(data) {
-            if(data.status < 400){
+            if(data.status == 200){
                 // 设置图片的src属性
                 $("#validateImage").attr("src", "data:image/png;base64,"+data.data.oriCopyImage);
                 $("#slideImage").attr("src", "data:image/png;base64,"+data.data.newImage);
-            }else{layer.open({
+            }else{
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);//关闭当前页
+                parent.layer.open({
                     icon:2,
                     title: "温馨提示",
                     content: data.info

@@ -20,7 +20,7 @@ public class CodeGenerator {
         GlobalConfig gc = new GlobalConfig();
         String projectPath = System.getProperty("user.dir");
         gc.setOutputDir(projectPath + "/src/main/java");
-        gc.setAuthor("遇见狂神说");
+        gc.setAuthor("打架俱乐部");
         gc.setOpen(false); //生成后是否打开资源管理器
         gc.setFileOverride(false); //重新生成时文件是否覆盖
         gc.setServiceName("%sService");	//去掉Service接口的首字母I
@@ -41,7 +41,7 @@ public class CodeGenerator {
 
         // 4、包配置
         PackageConfig pc = new PackageConfig();
-        pc.setModuleName("kuang");
+        pc.setModuleName("fclub");
         pc.setParent("com");
         pc.setController("controller");
         pc.setEntity("pojo");

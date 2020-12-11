@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fclub.pojo.Blog;
 import com.fclub.pojo.Question;
-import com.fclub.pojo.QuestionCategory;
 import com.fclub.service.BlogService;
 import com.fclub.service.QuestionService;
 import com.fclub.utils.KuangUtils;

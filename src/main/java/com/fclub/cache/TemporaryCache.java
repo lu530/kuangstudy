@@ -6,6 +6,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
+
+/**
+ * 邮箱验证码 5分钟有效
+ */
 @Component
 public class TemporaryCache {
     ExpiringMap<String,String> mailCode = ExpiringMap.builder()
@@ -20,7 +24,7 @@ public class TemporaryCache {
         mailCode.put(mail,code);
     }
 
-    public String getMailCode(String mail){
+     public String getMailCode(String mail){
         return mailCode.get(mail);
     }
 

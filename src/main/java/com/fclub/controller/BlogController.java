@@ -200,8 +200,6 @@ public class BlogController {
         String contentWithOutPic = blog.getContent().replaceAll("!\\[\\]\\(.*\\)", "");
         String subTitle = contentWithOutPic.length() < 130? contentWithOutPic:contentWithOutPic.replaceAll("\n","").substring(0,130);
         queryBlog.setSubtitle(subTitle);
-
-
         blogService.updateById(queryBlog);
 
         return "redirect:/blog/read/"+blog.getBid();
@@ -232,7 +230,7 @@ public class BlogController {
         comment.setTopicCategory(1);
         comment.setGmtCreate(KuangUtils.getTime());
         commentService.save(comment);
-        // 重定向到列表页面
+        // 重定向到列表页面   难道需要写一篇炸弹式的文章吸引流量吗？
         return "redirect:/blog/read/"+bid;
     }
 
